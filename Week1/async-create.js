@@ -51,7 +51,7 @@ async function seedDatabase() {
     
     await Promise.all(students.map(student =>
       execQuery('INSERT INTO students SET ?', student)
-    );
+    ));
   } catch (error) {
     console.error(error);
   }

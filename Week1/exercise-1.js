@@ -49,9 +49,19 @@ const creationQueries = [
   (7, 'Compleet waste of time', '16:45:00')`,
 ];
 
-creationQueries.forEach((query) => makeQuery(connection, query));
-['Invitee', 'Room', 'Meeting']
+async function arrangeMeetings() {
+  const creationPromises = creationQueries.map(query => makeQuery(connection, query));
+  const selectionPromises = ['Invitee', 'Room', 'Meeting']
   .map(name => `SELECT * FROM ${name}`)
-  .forEach(query => makeQuery(connection, query, true));
-makeQuery(connection, 'DROP DATABASE meetup;');
-connection.end(() => console.log('Closing connection'));
+  .map(query => makeQuery(connection, query, true));
+  try {
+    await Promise.all(creationPromises);
+    console.log((await Promise.all(selectionPromises)).join('\n'));
+    await makeQuery(connection, 'DROP DATABASE meetup;');
+  } catch (error) {
+    console.error('Error: ', error);
+  }
+  connection.end(() => console.log('Closing connection'));
+}
+
+arrangeMeetings();
