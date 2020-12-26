@@ -1,12 +1,5 @@
-import mysql from 'mysql';
+import connection from './mysql-connection.js';
 import makeQuery from './makeQuery.js';
-
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'hyfuser',
-  password: 'hyfpassword',
-  charset: 'utf8',
-});
 
 const creationQueries = [
   'CREATE DATABASE IF NOT EXISTS meetup;',
@@ -51,9 +44,11 @@ const creationQueries = [
 
 async function arrangeMeetings() {
   const creationPromises = creationQueries.map(query => makeQuery(connection, query));
+
   const selectionPromises = ['Invitee', 'Room', 'Meeting']
   .map(name => `SELECT * FROM ${name}`)
   .map(query => makeQuery(connection, query, true));
+
   try {
     await Promise.all(creationPromises);
     console.log((await Promise.all(selectionPromises)).join('\n'));
@@ -61,7 +56,8 @@ async function arrangeMeetings() {
   } catch (error) {
     console.error('Error: ', error);
   }
-  connection.end(() => console.log('Closing connection'));
+  
+  connection.destroy();
 }
 
 arrangeMeetings();
