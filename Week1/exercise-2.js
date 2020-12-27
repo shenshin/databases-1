@@ -1,14 +1,14 @@
 /* Write a JavaScript file (to be executed with Node.js) that queries (using select statements) the world database. The results given back should answer following questions: Don't omit to test your queries evey time. */
-import conn from './mysql-connection.js';
+import connection from './mysql-connection.js';
 import makeQuery from './makeQuery.js';
 
 async function queryWorld() {
   const output = async (query, limit = undefined) => {
-    console.log(await makeQuery(conn, `${query}${limit ? ` LIMIT ${limit}` : ''};`, true), '\n');
+    console.log(await makeQuery(connection, `${query}${limit ? ` LIMIT ${limit}` : ''};`, true), '\n');
   }
   
   try {
-    await makeQuery(conn, 'USE world;');
+    await makeQuery(connection, 'USE world;');
 
     console.log('What are the names of countries with population greater than 8 million?\n');
     await output('SELECT name FROM country WHERE population > 8000000 ORDER BY population DESC', 10);
@@ -42,7 +42,7 @@ async function queryWorld() {
   } catch (error) {
     console.error('error');
   }
-  conn.destroy();
+  connection.destroy();
 }
 
 queryWorld();

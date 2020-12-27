@@ -10,7 +10,7 @@ function makeQuery(connection, query, show = false) {
       if (error) reject(error);
       let message = '';
       if (show) {
-        if (fields) {
+        if (fields[0].db && fields[0].table) {
           message += `Database: ${fields[0].db}, Table: ${fields[0].table}\n`;
         }
         message += results.map(result => Object.entries(result).map(([key, val]) => `${key}: ${val}`).join(', ')).join('\n');
