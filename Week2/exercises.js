@@ -15,7 +15,7 @@ async function queryDatabase() {
       author_name VARCHAR(255),
       university VARCHAR(255),
       date_of_birth DATE,
-      h_index INT,
+      h_index DECIMAL(2,1),
       gender VARCHAR(10)
     );`,
   ].map((q) => makeQuery(q)));
@@ -48,7 +48,9 @@ async function queryDatabase() {
       date_of_birth,
       h_index,
       gender) VALUES 
-      ('')
+      ('Johnny Bishop', 'Gosagruj', 1955-12-14, 10.1, 'm'),
+      ('Verna Schneider', 'Rowviib', 1964-01-08, 9.4, 'f'),
+      ('Walter Phelps', 'Vazjubsez', 1976-11-23, 8.2, 'm');
   `);
 
   await makeQuery('SELECT * FROM authors;', true);
