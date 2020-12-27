@@ -1,0 +1,21 @@
+{
+  "name": "week2",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "## Agenda",
+  "main": "async-create-insert.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^7.16.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1"
+  },
+  "dependencies": {
+    "mysql": "^2.18.1"
+  }
+}
