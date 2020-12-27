@@ -1,3 +1,4 @@
+/* Write a JavaScript file (to be executed with Node.js) that queries (using select statements) the world database. The results given back should answer following questions: Don't omit to test your queries evey time. */
 import conn from './mysql-connection.js';
 import makeQuery from './makeQuery.js';
 
@@ -19,7 +20,7 @@ async function queryWorld() {
     await output("SELECT name, population FROM city WHERE population BETWEEN 500000 AND 1000000 ORDER BY population DESC", 10);
 
     console.log("What's the name of all the countries on the continent ‘Europe’?\n");
-    await output("SELECT name FROM country WHERE continent='Europe'");
+    await output("SELECT name FROM country WHERE continent = 'Europe'");
 
     console.log('List all the countries in the descending order of their surface areas.\n');
     await output("SELECT name FROM country ORDER BY SurfaceArea DESC");
