@@ -40,7 +40,7 @@ async function queryWorld() {
     console.log('\nWhat is the population number of the world?');
     await output("SELECT SUM(population) AS WorldPopulation FROM country");
   } catch (error) {
-    console.error(error.message);
+    console.error(`Error: ${error.message}`);
   }
   connection.destroy();
 }

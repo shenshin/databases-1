@@ -58,7 +58,7 @@ async function arrangeMeetings() {
   try {
     await Promise.all([...creationPromises, ...selectionPromises]);
   } catch (error) {
-    console.error(error.message);
+    console.error(`Error: ${error.message}`);
   }
   
   connection.destroy();
