@@ -16,6 +16,7 @@
     "eslint-plugin-import": "^2.22.1"
   },
   "dependencies": {
+    "colors": "^1.4.0",
     "mysql": "^2.18.1"
   }
 }
