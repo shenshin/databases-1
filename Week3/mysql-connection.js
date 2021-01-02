@@ -1,5 +1,6 @@
 import mysql from 'mysql';
 import util from 'util';
+import colors from 'colors';
 /**
  * Make a connection to your database, using your MySQL
  * hyfuser login credentials
@@ -23,7 +24,7 @@ export async function queryDB(callback) {
   try {
     await callback();
   } catch (error) {
-    console.error(error.message);
+    console.error(colors.red.inverse(error.message));
   } finally {
     connection.end();
   }
