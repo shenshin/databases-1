@@ -144,9 +144,6 @@ async function queryMongoDB() {
   */
   await collection.deleteOne({ _id });
 }
-/*
-Update that record with a new population
-*/
 
 async function connectMongoDB() {
   try {

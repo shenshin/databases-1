@@ -20,9 +20,9 @@ export function makeQueries(queriesArray) {
 
 export const insertArray = (array, query) => Promise.all(array.map((r) => makeQuery(query, [r])));
 
-export async function queryDB(callback) {
+export async function queryDB(action) {
   try {
-    await callback();
+    await action();
   } catch (error) {
     console.error(colors.red.inverse(error.message));
   } finally {
