@@ -63,7 +63,7 @@ async function saferGetPopulation(name, code) {
     WHERE Name = ? OR code = ?
   `;
   const result = await makeQuery(query, [name, code]);
-  if (!result || result.length === 0) throw new Error('No country found!');
+  if (!result || result?.length === 0) throw new Error('No country found!');
   return result;
 }
 
