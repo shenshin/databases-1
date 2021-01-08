@@ -1,9 +1,10 @@
 import colors from 'colors';
-import { makeQuery, connection, insertArray } from './mysql-connection.js';
+import {
+  makeQuery, connection as con, printTable,
+} from './mysql-connection.js';
 
-async function keys() {
-  await Promise.all([
-
+function keys() {
+  [
     /*
     Exercise 1: Keys
     */
@@ -23,26 +24,27 @@ async function keys() {
       h_index DECIMAL(19,2),
       gender VARCHAR(10)
     )`,
-  ].map((q) => makeQuery(q)));
-  /*
-  Write a query that adds a foreign key column to Authors table that references the column author_no. Call this column Collaborator.
-  */
-  await Promise.all([
-    'ALTER TABLE authors ADD collaborator INT',
+
+    /*
+    Write a query that adds a foreign key column to Authors table that references the column author_no. Call this column Collaborator.
+    */
+
+    `ALTER TABLE authors
+      ADD collaborator INT`,
     `ALTER TABLE authors
       ADD CONSTRAINT fk_collaborator 
       FOREIGN KEY  (collaborator)
       REFERENCES authors(author_no)`,
-  ].map((q) => makeQuery(q)));
+  ].map((q) => con.query(q));
 }
 
-async function relationShips() {
+function relationShips() {
   /*
     Exercise 2: Relationships
 
     Create another table, called Research_Papers with the following fields: (paper_id, paper_title, conference, publish_date, ...)
    */
-  await makeQuery(`
+  con.query(`
     CREATE TABLE research_papers (
       paper_id INT AUTO_INCREMENT PRIMARY KEY,
       paper_title TEXT,
@@ -58,7 +60,7 @@ async function relationShips() {
   // The relationship here is many-to-many because each author can have many research papers and each research paper can have many authors.
   // In order to deal with this situation I suggest creating a third table with authors' publications
 
-  await makeQuery(`
+  con.query(`
   CREATE TABLE publications (
     publication_id INT AUTO_INCREMENT PRIMARY KEY,
     author_id INT,
@@ -86,13 +88,15 @@ async function relationShips() {
     ['Simple mathematical models for controlling COVID-19 transmission through social distancing and community awareness', 'Physics and Society', '2020-12-19 17:45:56'],
     ['A Topological Design Tool for the Synthesis of Antenna Radiation Patterns', 'Classical Physics', '2020-12-18 12:55:17'],
   ];
-  await insertArray(researchPapersDetails, `
-    INSERT INTO research_papers (
-      paper_title,
-      conference,
-      publish_date
-    ) VALUES (?)
-  `);
+  researchPapersDetails.forEach((row) => {
+    con.query(`
+      INSERT INTO research_papers (
+        paper_title,
+        conference,
+        publish_date
+      ) VALUES (?, ?, ?)
+    `, row);
+  });
 
   const authorsDetails = [
     ['Johnny Bishop', 'Gosagruj', '1955-12-14', 10.1, 'male'],
@@ -104,15 +108,17 @@ async function relationShips() {
     ['Shane Summers', 'Rowviib', '1991-11-30', 9.1, 'who cares'],
     ['Caroline Simpson', 'Suhennos', '1969-10-09', 4.2, 'female'],
   ];
-  await insertArray(authorsDetails, `
-    INSERT INTO authors (
-      author_name,
-      university,
-      date_of_birth,
-      h_index,
-      gender
-    ) VALUES (?)
-  `);
+  authorsDetails.forEach((row) => {
+    con.query(`
+      INSERT INTO authors (
+        author_name,
+        university,
+        date_of_birth,
+        h_index,
+        gender
+      ) VALUES (?, ?, ?, ?, ?)
+    `, row);
+  });
 
   // Add conrtibutors to the users
   const contributors = [
@@ -123,13 +129,14 @@ async function relationShips() {
     [5, 4],
     [6, 3],
   ];
-  const promises = contributors.map((both) => makeQuery(`
-    UPDATE authors
-    SET collaborator = ?
-    WHERE
-    author_no = ?
-  `, both));
-  await Promise.all(promises);
+  contributors.forEach((row) => {
+    con.query(`
+      UPDATE authors
+      SET collaborator = ?
+      WHERE
+      author_no = ?
+    `, row);
+  });
 
   // here I connect the specific author with an article:
   // each author may collaborate in many different articles,
@@ -145,11 +152,13 @@ async function relationShips() {
   // of each author and there is no need to use
   // foreign key 'fk_collaborator' that was added in exercise 1.
   // Am I right?
-  await insertArray(publicationsDetails, `
-  INSERT INTO publications (
-    author_id, research_paper_id
-  ) VALUES (?)
-`);
+  publicationsDetails.forEach((row) => {
+    con.query(`
+      INSERT INTO publications (
+        author_id, research_paper_id
+      ) VALUES (?, ?)
+    `, row);
+  });
 }
 
 async function joins() {
@@ -158,8 +167,8 @@ async function joins() {
 
     Write a query that prints names of all Authors and their corresponding Collaborators.
     */
-  console.log('\nAll authors and their corresponding Collaborators');
-  console.log(await makeQuery(`
+  console.log('\nAll authors and their corresponding Collaborators'.blue);
+  printTable(await makeQuery(`
     SELECT
       a.author_name,
       c.author_name AS collaborator_name
@@ -186,14 +195,14 @@ async function joins() {
       authorsWithSamePublications,
     };
   });
-  console.log('\nAll Authors and ALL their collegues who contributed to the same publications');
+  console.log('\nAll Authors and ALL their collegues who contributed to the same publications'.blue);
   console.log(collaboratorsByAuthor);
 
   /*
     Write a query that prints all columns of Authors and their pubished paper_title. If there is an author without any Research_Papers, print the information of that Author too.
   */
-  console.log('\nAll columns of Authors and their pubished paper_title');
-  console.log(await makeQuery(`
+  console.log('\nAll columns of Authors and their pubished paper_title'.blue);
+  printTable(await makeQuery(`
       SELECT a.*, r.paper_title
       FROM authors a 
       LEFT JOIN publications p
@@ -212,8 +221,8 @@ async function aggregate() {
     All research papers and the number of authors that wrote that paper.
 
     */
-  console.log('\nAll research papers and the number of authors that wrote that paper.');
-  console.log(await makeQuery(`
+  console.log('\nAll research papers and the number of authors that wrote that paper.'.blue);
+  printTable(await makeQuery(`
      SELECT r.paper_title AS title, 
      COUNT(DISTINCT p.author_id)
      AS number_of_authors
@@ -225,8 +234,8 @@ async function aggregate() {
   /*
    Sum of the research papers published by all female authors
    */
-  console.log('\nSum of the research papers published by all female authors');
-  console.log(await makeQuery(`
+  console.log('\nSum of the research papers published by all female authors'.blue);
+  printTable(await makeQuery(`
      SELECT a.author_name AS female_author,
      COUNT(p.publication_id) AS number_of_papers
      FROM authors a
@@ -238,8 +247,8 @@ async function aggregate() {
   /*
    Average of the h-index of all authors per university.
    */
-  console.log('\nAverage of the h-index of all authors per university.');
-  console.log(await makeQuery(`
+  console.log('\nAverage of the h-index of all authors per university.'.blue);
+  printTable(await makeQuery(`
      SELECT university,
      AVG(h_index) AS average_h_index
      FROM authors
@@ -248,8 +257,8 @@ async function aggregate() {
   /*
    Sum of the research papers of the authors per university.
    */
-  console.log('\nSum of the research papers of the authors per university.');
-  console.log(await makeQuery(`
+  console.log('\nSum of the research papers of the authors per university.'.blue);
+  printTable(await makeQuery(`
      SELECT a.university,
      COUNT(p.publication_id) AS number_of_papers
      FROM authors a
@@ -260,8 +269,8 @@ async function aggregate() {
   /*
    Minimum and maximum of the h-index of all authors per university..
    */
-  console.log('\nMinimum and maximum of the h-index of all authors per university');
-  console.log(await makeQuery(`
+  console.log('\nMinimum and maximum of the h-index of all authors per university'.blue);
+  printTable(await makeQuery(`
      SELECT university,
      MIN(h_index) AS min_h_index,
      MAX(h_index) AS max_h_index
@@ -270,17 +279,21 @@ async function aggregate() {
   `));
 }
 
-async function queryDatabase() {
+// function calls
+
+con.on('error', (error) => {
+  console.error(colors.red.inverse(error.message));
+});
+keys();
+relationShips();
+
+(async function queryDatabase() {
   try {
-    await keys();
-    await relationShips();
     await joins();
     await aggregate();
   } catch (error) {
-    console.error(colors.red.inverse(error.message));
+    process.stdout.write(colors.red.inverse(error.message));
   } finally {
-    connection.end();
+    con.end();
   }
-}
-
-queryDatabase();
+}());
