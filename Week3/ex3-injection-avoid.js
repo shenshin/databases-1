@@ -1,4 +1,7 @@
-import { queryDB, makeQuery, connection as conn } from './mysql-connection.js';
+import colors from 'colors';
+import {
+  queryDB, makeQuery, connection as conn, printTable,
+} from './mysql-connection.js';
 
 /*
 SQL injection
@@ -29,7 +32,8 @@ getPopulation('country', 'Netherlands', 'NLD', (error, result) => {
   if (error) {
     console.error('Runtime error: ', error.message);
   } else {
-    console.log('\nUnsafe getPopulation (Netherlands)\n', result);
+    console.log(colors.blue('\nUnsafe getPopulation (Netherlands)\n'));
+    result.forEach((row) => printTable(row));
   }
 });
 
@@ -44,7 +48,8 @@ getPopulation('country', "' OR 1=1 OR '", "' OR '", (error, result) => {
   if (error) {
     console.error('Runtime error: ', error.message);
   } else {
-    console.log('\nTrying to make SQL injection\n', result);
+    console.log('\nTrying to make SQL injection\n'.blue);
+    result.forEach((row) => printTable(row));
   }
 });
 /*
@@ -72,9 +77,11 @@ async function saferGetPopulation(name, code) {
 queryDB(async () => {
   await makeQuery('USE world');
 
-  console.log('\nSafer getPopulation (USA)');
-  console.log(await saferGetPopulation('United States', 'USA'));
+  console.log('\nSafer getPopulation (USA)'.blue);
+  (await saferGetPopulation('United States', 'USA'))
+    .forEach((row) => printTable(row));
 
-  console.log('\nTrying to pass the same parameters that previously caused safety issue:');
-  console.log(await saferGetPopulation("' OR 1=1 OR '", "' OR '"));
+  console.log('\nTrying to pass the same parameters that previously caused safety issue:'.blue);
+  (await saferGetPopulation("' OR 1=1 OR '", "' OR '"))
+    .forEach((row) => printTable(row));
 });

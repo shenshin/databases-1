@@ -1,6 +1,6 @@
 import colors from 'colors';
 import {
-  connection, makeQuery, insertArray, makeQueries,
+  connection, makeQuery, insertArray, printTable,
 } from './mysql-connection.js';
 
 /*
@@ -10,6 +10,16 @@ transaction (Write transaction.js file)
 */
 
 async function makeTransfer(fromAccount, toAccount, amount) {
+  // prints tables to console
+  const showTables = async () => {
+    console.log('Accounts'.blue);
+    (await makeQuery('SELECT * from account'))
+      .forEach((result) => printTable(result));
+    console.log('Account Changes'.blue);
+    (await makeQuery('SELECT * from account_changes'))
+      .forEach((result) => printTable(result));
+  };
+
   // transaction date and time
   const dateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
   // transaction comment
@@ -23,10 +33,12 @@ async function makeTransfer(fromAccount, toAccount, amount) {
     `, [accountNumber]))[0];
     return balance;
   };
-
+  connection.query('USE week3');
+  connection.query('START TRANSACTION');
   try {
-    await makeQuery('USE week3');
-    await makeQuery('START TRANSACTION');
+    console.log('Tables before transfer'.yellow);
+    await showTables();
+    // checking the balances of the accounts involved
     const fromBalance = await getBalance(fromAccount);
     const toBalance = await getBalance(toAccount);
     if (amount > fromBalance) {
@@ -52,14 +64,13 @@ async function makeTransfer(fromAccount, toAccount, amount) {
     await makeQuery(updateQuery, [fromBalance - amount, fromAccount]);
     await makeQuery(updateQuery, [toBalance + amount, toAccount]);
 
-    console.log(await makeQueries([
-      'SELECT * from account',
-      'SELECT * from account_changes',
-    ]));
     await makeQuery('COMMIT');
+
+    console.log('Tables after transfer'.yellow);
+    await showTables();
   } catch (error) {
     console.log(colors.red.inverse(error.message));
-    await makeQuery('ROLLBACK');
+    connection.query('ROLLBACK');
   } finally {
     connection.end();
   }

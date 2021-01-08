@@ -1,4 +1,4 @@
-import { queryDB, makeQuery, insertArray } from './mysql-connection.js';
+import { connection, printTable } from './mysql-connection.js';
 /*
 Insert some sample data in these tables. (write tr-insert-values.js file)
 */
@@ -18,17 +18,23 @@ const changes = [
   // place the elements of balances array in front of each change
 ].map((change, i) => ([...balances[i], ...change]));
 
-queryDB(async () => {
-  await makeQuery('USE week3');
-  await insertArray(
-    balances,
-    `INSERT INTO account (account_number, balance)
-    VALUES (?)`,
-  );
-  await insertArray(
-    changes,
-    `INSERT INTO account_changes
-    (account_number, amount, changed_date, remark)
-    VALUES (?)`,
-  );
-});
+// is launched on each mySql query result
+function output(_, result) {
+  printTable(result);
+}
+
+connection.query('USE week3');
+for (let i = 0; i < balances.length; i += 1) {
+  connection.query(`
+    INSERT INTO account
+      (account_number, balance)
+    VALUES (?, ?)
+  `, balances[i], output);
+  connection.query(`
+    INSERT INTO account_changes
+      (account_number, amount, changed_date, remark)
+    VALUES (?, ?, ?, ?)
+  `, changes[i], output);
+}
+connection.on('error', (error) => (console.error(error.message)));
+connection.end();

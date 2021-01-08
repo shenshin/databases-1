@@ -14,8 +14,8 @@
     "prompt": "^1.1.0"
   },
   "scripts": {
-    "1": "node tr-create-tables",
-    "2": "node tr-insert-values",
-    "3": "node transaction"
+    "1": "node ex2-tr-create-tables",
+    "2": "node ex2-tr-insert-values",
+    "3": "node ex2-transaction"
   }
 }

@@ -1,6 +1,6 @@
 import mysql from 'mysql';
-import util from 'util';
 import colors from 'colors';
+import util from 'util';
 /**
  * Make a connection to your database, using your MySQL
  * hyfuser login credentials
@@ -27,5 +27,22 @@ export async function queryDB(action) {
     console.error(colors.red.inverse(error.message));
   } finally {
     connection.end();
+  }
+}
+
+export function printTable(queryResult) {
+  const printObject = (object) => {
+    Object.entries(object).forEach(([key, val], ind, arr) => {
+      process.stdout.write(`${key}: `);
+      process.stdout.write(colors.green(val));
+      process.stdout.write(ind === arr.length - 1 ? '\n' : ', ');
+    });
+  };
+  if (queryResult && typeof queryResult === 'object') {
+    printObject(queryResult);
+  } else if (queryResult && Array.isArray(queryResult) && queryResult.length > 0) {
+    queryResult.forEach((row) => printObject(row));
+  } else {
+    throw new Error('Query result should be an object or array of objects');
   }
 }
