@@ -13,11 +13,9 @@ async function makeTransfer(fromAccount, toAccount, amount) {
   // prints tables to console
   const showTables = async () => {
     console.log('Accounts'.blue);
-    (await makeQuery('SELECT * from account'))
-      .forEach((result) => printTable(result));
+    printTable(await makeQuery('SELECT * from account'));
     console.log('Account Changes'.blue);
-    (await makeQuery('SELECT * from account_changes'))
-      .forEach((result) => printTable(result));
+    printTable(await makeQuery('SELECT * from account_changes'));
   };
 
   // transaction date and time

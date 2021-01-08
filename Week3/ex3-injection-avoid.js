@@ -33,7 +33,7 @@ getPopulation('country', 'Netherlands', 'NLD', (error, result) => {
     console.error('Runtime error: ', error.message);
   } else {
     console.log(colors.blue('\nUnsafe getPopulation (Netherlands)\n'));
-    result.forEach((row) => printTable(row));
+    printTable(result);
   }
 });
 
@@ -49,7 +49,7 @@ getPopulation('country', "' OR 1=1 OR '", "' OR '", (error, result) => {
     console.error('Runtime error: ', error.message);
   } else {
     console.log('\nTrying to make SQL injection\n'.blue);
-    result.forEach((row) => printTable(row));
+    printTable(result);
   }
 });
 /*
@@ -78,10 +78,8 @@ queryDB(async () => {
   await makeQuery('USE world');
 
   console.log('\nSafer getPopulation (USA)'.blue);
-  (await saferGetPopulation('United States', 'USA'))
-    .forEach((row) => printTable(row));
+  printTable(await saferGetPopulation('United States', 'USA'));
 
   console.log('\nTrying to pass the same parameters that previously caused safety issue:'.blue);
-  (await saferGetPopulation("' OR 1=1 OR '", "' OR '"))
-    .forEach((row) => printTable(row));
+  printTable(await saferGetPopulation("' OR 1=1 OR '", "' OR '"));
 });

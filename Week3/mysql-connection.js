@@ -38,11 +38,9 @@ export function printTable(queryResult) {
       process.stdout.write(ind === arr.length - 1 ? '\n' : ', ');
     });
   };
-  if (queryResult && typeof queryResult === 'object') {
-    printObject(queryResult);
-  } else if (queryResult && Array.isArray(queryResult) && queryResult.length > 0) {
+  if (Array.isArray(queryResult)) {
     queryResult.forEach((row) => printObject(row));
   } else {
-    throw new Error('Query result should be an object or array of objects');
+    printObject(queryResult);
   }
 }
