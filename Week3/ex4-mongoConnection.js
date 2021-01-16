@@ -13,17 +13,19 @@ import csvtojson from 'csvtojson';
 import colors from 'colors';
 import { printTable } from './mysql-connection.js';
 
-const { MongoClient } = pkg;
-
-// connecting env constants with MongoDB login and password
-dotenv.config();
-const user = process.env.MONGO_USER;
-const pass = process.env.MONGO_PASS;
-
-// MongoDB connection URL
-const url = `mongodb+srv://${user}:${pass}@aleks-shenshin.q0apz.mongodb.net/test?retryWrites=true&w=majority&useNewUrlParser=true&useUnifiedTopology=true`;
-
-const client = new MongoClient(url);
+async function connectMongoDB(mongoClient) {
+  try {
+    await mongoClient.connect();
+    await insertCity();
+    await insertCountry();
+    await insertCountryLanguage();
+    await queryDutchCities();
+  } catch (err) {
+    console.log(err);
+  } finally {
+    await mongoClient.close();
+  }
+}
 
 /**
  * Helper function that reads CSV file with the 'name' from /mongodb folder,
@@ -119,7 +121,7 @@ async function insertCountryLanguage() {
 /*
 Write the following queries using MongoDB syntax in the JavaScript files.
 */
-async function queryMongoDB() {
+async function queryDutchCities() {
   const collection = client.db('world').collection('city');
   /*
   Create a new record (document) for a new city (your home town, say)
@@ -154,18 +156,16 @@ async function queryMongoDB() {
   await collection.deleteOne({ _id });
 }
 
-async function connectMongoDB() {
-  try {
-    await client.connect();
-    await insertCity();
-    await insertCountry();
-    await insertCountryLanguage();
-    await queryMongoDB();
-  } catch (err) {
-    console.log(err);
-  } finally {
-    await client.close();
-  }
-}
+const { MongoClient } = pkg;
 
-connectMongoDB();
+// connecting env constants with MongoDB login and password
+dotenv.config();
+const user = process.env.MONGO_USER;
+const pass = process.env.MONGO_PASS;
+
+// MongoDB connection URL
+const url = `mongodb+srv://${user}:${pass}@aleks-shenshin.q0apz.mongodb.net/test?retryWrites=true&w=majority&useNewUrlParser=true&useUnifiedTopology=true`;
+
+const client = new MongoClient(url);
+
+connectMongoDB(client);
