@@ -22,7 +22,7 @@ function keys() {
       university VARCHAR(255),
       date_of_birth DATE,
       h_index DECIMAL(19,2),
-      gender VARCHAR(10)
+      gender VARCHAR(1)
     )`,
 
     /*
@@ -99,14 +99,14 @@ function relationShips() {
   });
 
   const authorsDetails = [
-    ['Johnny Bishop', 'Gosagruj', '1955-12-14', 10.1, 'male'],
-    ['Verna Schneider', 'Rowviib', '1964-01-08', 9.4, 'undecided'],
-    ['Walter Phelps', 'Gosagruj', '1976-11-23', 8.2, 'male'],
-    ['Flora Dunn', 'Rowviib', '1990-08-17', 3.4, 'female'],
-    ['Ethan Collins', 'Gosagruj', '1995-01-12', 2.8, 'undecided'],
-    ['Harvey Fox', 'Suhennos', '1985-09-03', 4.5, 'neutral'],
-    ['Shane Summers', 'Rowviib', '1991-11-30', 9.1, 'who cares'],
-    ['Caroline Simpson', 'Suhennos', '1969-10-09', 4.2, 'female'],
+    ['Johnny Bishop', 'Gosagruj', '1955-12-14', 10.1, 'm'],
+    ['Verna Schneider', 'Rowviib', '1964-01-08', 9.4, 'u'],
+    ['Walter Phelps', 'Gosagruj', '1976-11-23', 8.2, 'm'],
+    ['Flora Dunn', 'Rowviib', '1990-08-17', 3.4, 'f'],
+    ['Ethan Collins', 'Gosagruj', '1995-01-12', 2.8, 'u'],
+    ['Harvey Fox', 'Suhennos', '1985-09-03', 4.5, 'n'],
+    ['Shane Summers', 'Rowviib', '1991-11-30', 9.1, 'w'],
+    ['Caroline Simpson', 'Suhennos', '1969-10-09', 4.2, 'f'],
   ];
   authorsDetails.forEach((row) => {
     con.query(`
@@ -241,7 +241,7 @@ async function aggregate() {
      FROM authors a
      LEFT JOIN publications p
      ON a.author_no = p.author_id
-     WHERE a.gender = 'female'
+     WHERE a.gender = 'f'
      GROUP BY a.author_no
    `));
   /*
