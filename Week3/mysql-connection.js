@@ -20,7 +20,7 @@ export function makeQueries(queriesArray) {
 
 export const insertArray = (array, query) => Promise.all(array.map((r) => makeQuery(query, [r])));
 
-export async function queryDB(action) {
+export async function tryQuery(action) {
   try {
     await action();
   } catch (error) {

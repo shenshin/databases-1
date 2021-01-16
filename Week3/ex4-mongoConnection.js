@@ -6,13 +6,22 @@ Convert the MySQL world database into MongoDB either on your local machine or in
 
     See 'ex4-sqlToMongoConversionSteps.md' for details
  */
+import dotenv from 'dotenv';
 import pkg from 'mongodb';
 import path from 'path';
 import csvtojson from 'csvtojson';
+import colors from 'colors';
+import { printTable } from './mysql-connection.js';
 
 const { MongoClient } = pkg;
 
-const url = 'mongodb+srv://aleks:acxsfh@aleks-shenshin.q0apz.mongodb.net/test?retryWrites=true&w=majority&useNewUrlParser=true&useUnifiedTopology=true';
+// connecting env constants with MongoDB login and password
+dotenv.config();
+const user = process.env.MONGO_USER;
+const pass = process.env.MONGO_PASS;
+
+// MongoDB connection URL
+const url = `mongodb+srv://${user}:${pass}@aleks-shenshin.q0apz.mongodb.net/test?retryWrites=true&w=majority&useNewUrlParser=true&useUnifiedTopology=true`;
 
 const client = new MongoClient(url);
 
@@ -132,13 +141,13 @@ async function queryMongoDB() {
   Read the document that you just updated in two ways :
   finding by the city name,
   */
-  console.log('\nThe village Nuenen:');
-  console.log(await collection.findOne({ Name }));
+  console.log('\nThe village Nuenen:'.blue);
+  printTable(await collection.findOne({ Name }));
   /*
   and then by the country code
   */
-  console.log('\nCities in the Netherlands:');
-  console.log(await collection.find({ CountryCode }).toArray());
+  console.log(colors.blue('\nCities in the Netherlands:'));
+  printTable(await collection.find({ CountryCode }).toArray());
   /*
   Delete the city
   */

@@ -1,6 +1,6 @@
 import colors from 'colors';
 import {
-  queryDB, makeQuery, connection as conn, printTable,
+  tryQuery, makeQuery, connection as conn, printTable,
 } from './mysql-connection.js';
 
 /*
@@ -74,7 +74,7 @@ async function saferGetPopulation(name, code) {
 
 // the usage of safer version of getPopulation
 
-queryDB(async () => {
+tryQuery(async () => {
   await makeQuery('USE world');
 
   console.log('\nSafer getPopulation (USA)'.blue);
