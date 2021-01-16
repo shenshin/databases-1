@@ -20,13 +20,3 @@ export function printTable(queryResult) {
     });
   });
 }
-
-export async function tryDataBase(action) {
-  try {
-    await action();
-  } catch (error) {
-    console.error(error.message);
-  } finally {
-    connection.end();
-  }
-}
