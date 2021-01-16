@@ -201,7 +201,7 @@ async function joins() {
   /*
     Write a query that prints all columns of Authors and their pubished paper_title. If there is an author without any Research_Papers, print the information of that Author too.
   */
-  console.log('\nAll columns of Authors and their pubished paper_title'.blue);
+  console.log('\nAll columns of Authors and their published paper_title'.blue);
   printTable(await makeQuery(`
       SELECT a.*, r.paper_title
       FROM authors a 
@@ -229,7 +229,7 @@ async function aggregate() {
      FROM research_papers r
      LEFT JOIN publications p
      ON r.paper_id = p.research_paper_id
-     GROUP BY title
+     GROUP BY r.paper_id
    `));
   /*
    Sum of the research papers published by all female authors
@@ -242,7 +242,7 @@ async function aggregate() {
      LEFT JOIN publications p
      ON a.author_no = p.author_id
      WHERE a.gender = 'female'
-     GROUP BY female_author
+     GROUP BY a.author_no
    `));
   /*
    Average of the h-index of all authors per university.
@@ -287,7 +287,7 @@ con.on('error', (error) => {
 keys();
 relationShips();
 
-(async function queryDatabase() {
+(async function tryQuery() {
   try {
     await joins();
     await aggregate();
