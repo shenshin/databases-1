@@ -21,7 +21,7 @@ export function printTable(queryResult) {
   });
 }
 
-export async function queryDB(action) {
+export async function tryDataBase(action) {
   try {
     await action();
   } catch (error) {

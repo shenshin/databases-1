@@ -1,6 +1,6 @@
 /* Write a JavaScript file (to be executed with Node.js) that creates and makes a connection to a MySQL database. Do so using the mysql package (https://www.npmjs.com/package/mysql). */
 import colors from 'colors';
-import { connection as con, makeQuery, printTable } from './mysql-connection.js';
+import { connection as con, printTable } from './mysql-connection.js';
 
 function createMeetings() {
   [
@@ -89,27 +89,22 @@ function insertMeetings() {
   });
 }
 
-async function selectQueries() {
+function selectQueriesSync() {
   const tables = ['invitee', 'room', 'meeting'];
-  const promises = tables
-    .map((name) => `SELECT * FROM ${name}`)
-    .map((query) => makeQuery(query));
-  try {
-    const results = await Promise.all(promises);
-    results.forEach((result, i) => {
-      console.log(colors.blue(tables[i]));
-      printTable(result);
+  tables.map((name) => `SELECT * FROM ${name}`)
+    .forEach((query, i) => {
+      con.query(query, (err, res) => {
+        console.log(colors.blue(tables[i]));
+        printTable(res);
+      });
     });
-  // catching errors in promises
-  } catch (error) {
-    console.error(error.message);
-  }
 }
+
 // catching mySql errors
 con.on('error', (error) => {
   console.error(error.message);
 });
 createMeetings();
 insertMeetings();
-selectQueries();
+selectQueriesSync();
 con.end();
